@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useGameState } from "@/hooks/useGameState";
 import { rollDice, selectPrompt } from "@/lib/actions/game";
 import DiceRoller from "@/components/DiceRoller";
@@ -24,6 +25,7 @@ export default function PlayPage({
     const pid = localStorage.getItem(`participant_${sessionId}`);
     if (pid && participants.length > 0) {
       const p = participants.find((p) => p.id === pid);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring identity from localStorage
       if (p) setParticipant(p);
     }
   }, [participants, sessionId]);
@@ -40,24 +42,27 @@ export default function PlayPage({
     } else if (currentTurn?.status === "waiting") {
       setCurrentPrompt(null);
     }
-  }, [currentTurn?.status, currentTurn?.prompt_id]);
+  }, [currentTurn]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetching prompt from Supabase
     fetchPrompt();
   }, [fetchPrompt]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-        <span className="text-lg text-gray-500">Loading...</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50 gap-3">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-gray-500">Loading game...</span>
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50 gap-3">
         <span className="text-lg text-red-500">Session not found</span>
+        <Link href="/" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">← Back to Home</Link>
       </div>
     );
   }
@@ -150,6 +155,13 @@ export default function PlayPage({
             </div>
           )}
         </div>
+
+        {/* Identity not found */}
+        {!participant && !loading && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm rounded-lg px-4 py-3 text-center">
+            Your identity was not found. <a href={`/join/${session.join_code}`} className="underline font-medium">Rejoin the game</a> to participate.
+          </div>
+        )}
 
         {/* Active team indicator */}
         {activeTeam && (

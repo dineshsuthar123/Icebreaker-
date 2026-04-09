@@ -45,14 +45,14 @@ export default function TeamList({
                 <span className="font-semibold text-gray-800 text-sm">
                   {team.name}
                 </span>
-                {isActive && (
-                  <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full ml-auto">
-                    Active
-                  </span>
-                )}
                 <span className="text-xs text-gray-400 ml-auto">
                   Pos: {team.position}
                 </span>
+                {isActive && (
+                  <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full ml-1">
+                    Active
+                  </span>
+                )}
               </div>
               <div className="text-xs text-gray-500">
                 {captain && (

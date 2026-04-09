@@ -35,7 +35,8 @@ export default function DiceRoller({ onRoll, disabled, lastValue }: DiceRollerPr
       <button
         onClick={handleRoll}
         disabled={disabled || rolling}
-        className={`w-24 h-24 rounded-2xl text-5xl flex items-center justify-center transition-all shadow-lg ${
+        aria-label={rolling ? "Rolling dice" : displayValue ? `Dice shows ${displayValue}` : "Roll the dice"}
+        className={`w-24 h-24 rounded-2xl text-5xl flex items-center justify-center transition-all shadow-lg focus-visible:ring-4 focus-visible:ring-indigo-300 focus-visible:outline-none ${
           disabled
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : rolling

@@ -11,6 +11,7 @@ export default function CreateSessionPage() {
   const [maxRounds, setMaxRounds] = useState(10);
   const [boardSize, setBoardSize] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const addTeam = () => {
     if (teamNames.length < 8) {
@@ -32,11 +33,12 @@ export default function CreateSessionPage() {
 
   const handleCreate = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const { session } = await createSession(teamNames, maxRounds, boardSize);
       router.push(`/host/${session.id}`);
     } catch (err) {
-      alert("Failed to create session: " + (err as Error).message);
+      setErrorMsg("Failed to create session: " + (err as Error).message);
       setLoading(false);
     }
   };
@@ -131,6 +133,12 @@ export default function CreateSessionPage() {
         >
           {loading ? "Creating..." : "Create Session"}
         </button>
+
+        {errorMsg && (
+          <div className="mt-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+            {errorMsg}
+          </div>
+        )}
       </div>
     </div>
   );

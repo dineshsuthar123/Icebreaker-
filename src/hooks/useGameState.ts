@@ -48,6 +48,7 @@ export function useGameState(sessionId: string): GameState & { refresh: () => vo
   }, [fetchAll]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch + realtime subscription from external system (Supabase)
     fetchAll();
 
     // Subscribe to realtime changes

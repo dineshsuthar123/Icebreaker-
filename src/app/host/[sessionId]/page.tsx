@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import Link from "next/link";
 import { useGameState } from "@/hooks/useGameState";
 import { startGame, endGame } from "@/lib/actions/session";
 import { rollDice, selectPrompt, completeTurn, resetTurn } from "@/lib/actions/game";
@@ -21,6 +22,7 @@ export default function HostGamePage({
     useGameState(sessionId);
   const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const joinUrl = session && typeof window !== "undefined" 
     ? `${window.location.origin}/join/${session.join_code}` 
@@ -46,16 +48,18 @@ export default function HostGamePage({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-lg text-gray-500">Loading...</span>
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-gray-500">Loading game...</span>
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
         <span className="text-lg text-red-500">Session not found</span>
+        <Link href="/" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">← Back to Home</Link>
       </div>
     );
   }
@@ -64,22 +68,24 @@ export default function HostGamePage({
 
   const handleStartGame = async () => {
     setActionLoading(true);
+    setErrorMsg(null);
     try {
       await startGame(sessionId);
       refresh();
     } catch (err) {
-      alert("Failed to start: " + (err as Error).message);
+      setErrorMsg("Failed to start: " + (err as Error).message);
     }
     setActionLoading(false);
   };
 
   const handleEndGame = async () => {
     setActionLoading(true);
+    setErrorMsg(null);
     try {
       await endGame(sessionId);
       refresh();
     } catch (err) {
-      alert("Failed to end game: " + (err as Error).message);
+      setErrorMsg("Failed to end game: " + (err as Error).message);
     }
     setActionLoading(false);
   };
@@ -99,12 +105,13 @@ export default function HostGamePage({
   const handleShowPrompt = async () => {
     if (!currentTurn || !currentTurn.space_type) return;
     setActionLoading(true);
+    setErrorMsg(null);
     try {
       const prompt = await selectPrompt(currentTurn.id, sessionId, currentTurn.space_type);
       setCurrentPrompt(prompt);
       refresh();
     } catch (err) {
-      alert("Failed to load prompt: " + (err as Error).message);
+      setErrorMsg("Failed to load prompt: " + (err as Error).message);
       refresh();
     }
     setActionLoading(false);
@@ -156,14 +163,25 @@ export default function HostGamePage({
             />
           </div>
 
-          <div className="mt-6 flex gap-3">
-            <button
-              onClick={handleStartGame}
-              disabled={actionLoading || participants.length === 0}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold py-3 px-8 rounded-xl text-lg transition-colors shadow-lg"
-            >
-              {actionLoading ? "Starting..." : "▶ Start Game"}
-            </button>
+          <div className="mt-6 flex flex-col gap-3">
+            {errorMsg && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+                {errorMsg}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={handleStartGame}
+                disabled={actionLoading || participants.length === 0}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold py-3 px-8 rounded-xl text-lg transition-colors shadow-lg"
+                aria-label="Start the game"
+              >
+                {actionLoading ? "Starting..." : "▶ Start Game"}
+              </button>
+            </div>
+            {participants.length === 0 && (
+              <p className="text-sm text-gray-400">Waiting for at least one participant to join...</p>
+            )}
           </div>
         </div>
       </div>
@@ -221,6 +239,13 @@ export default function HostGamePage({
             End Game
           </button>
         </div>
+
+        {errorMsg && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+            <span>{errorMsg}</span>
+            <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-600 ml-3">&times;</button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Left: Board */}

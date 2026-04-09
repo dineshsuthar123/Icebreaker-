@@ -20,7 +20,7 @@ export default function Home() {
         {/* Host: Create Session */}
         <button
           onClick={() => router.push("/host/create")}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl text-lg transition-colors shadow-lg"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl text-lg transition-colors shadow-lg focus-visible:ring-4 focus-visible:ring-indigo-300 focus-visible:outline-none"
         >
           🎯 Create Session (Host)
         </button>
@@ -42,7 +42,8 @@ export default function Home() {
                 if (joinCode.length >= 4) router.push(`/join/${joinCode}`);
               }}
               disabled={joinCode.length < 4}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors focus-visible:ring-4 focus-visible:ring-green-300 focus-visible:outline-none"
+              aria-label="Join a game with this code"
             >
               Join
             </button>

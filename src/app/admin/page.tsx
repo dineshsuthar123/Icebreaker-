@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   getPrompts,
   createPrompt,
@@ -42,6 +43,7 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data fetch from Supabase
     load();
   }, [load]);
 
@@ -102,12 +104,12 @@ export default function AdminPage() {
               Manage prompts for the icebreaker game
             </p>
           </div>
-          <a
+          <Link
             href="/"
             className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
           >
             ← Back to Game
-          </a>
+          </Link>
         </div>
 
         {/* Add new prompt */}

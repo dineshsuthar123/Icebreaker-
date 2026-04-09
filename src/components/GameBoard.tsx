@@ -37,14 +37,14 @@ export default function GameBoard({ boardSize, teams }: GameBoardProps) {
           return (
             <div
               key={pos}
-              className={`relative w-10 h-10 rounded-md flex items-center justify-center text-xs font-bold ${
+              className={`relative w-11 h-11 rounded-md flex items-center justify-center text-sm font-bold ${
                 pos === 0
                   ? "bg-gray-200 text-gray-600"
                   : pos === boardSize
                   ? "bg-red-400 text-white"
                   : TYPE_COLORS[type]
               } ${pos === 0 ? "" : "text-white"}`}
-              title={pos === 0 ? "Start" : pos === boardSize ? "End" : type}
+              title={pos === 0 ? "Start" : pos === boardSize ? "End" : `${type} (space ${pos})`}
             >
               {pos === 0 ? "GO" : pos === boardSize ? "🏁" : TYPE_ICONS[type]}
 
@@ -54,9 +54,10 @@ export default function GameBoard({ boardSize, teams }: GameBoardProps) {
                   {teamsHere.map((t) => (
                     <div
                       key={t.id}
-                      className="w-3 h-3 rounded-full border-2 border-white shadow"
+                      className="w-4 h-4 rounded-full border-2 border-white shadow"
                       style={{ backgroundColor: t.color }}
                       title={t.name}
+                      aria-label={`${t.name} token`}
                     />
                   ))}
                 </div>

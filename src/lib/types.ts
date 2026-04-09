@@ -54,13 +54,6 @@ export interface Turn {
   created_at: string;
 }
 
-export interface PromptHistory {
-  id: string;
-  session_id: string;
-  prompt_id: string;
-  used_at: string;
-}
-
 // Board space types mapped by position
 export const SPACE_TYPES: PromptType[] = ["move", "talk", "create", "wildcard"];
 
