@@ -1,59 +1,27 @@
-# Icebreaker Board Game — Live Facilitation Platform
-
-A real-time web-based board game designed for innovation workshop icebreakers. A facilitator creates a session and projects it on a shared screen. Participants join in seconds by scanning a QR code — no login, no app install, no friction. Teams take turns on a shared board, completing collaborative prompts that warm up a room before ideation begins.
-
-Built as a focused MVP for rapid deployment in live workshop settings.
+# Icebreaker � Real-Time Facilitation Board Game for Innovation Workshops
 
 ---
 
 ## Overview
 
-This application solves a specific problem: **getting a room of strangers to interact before a workshop begins**. Traditional icebreakers are awkward, hard to scale, and difficult to facilitate. This platform turns icebreaking into a structured, facilitator-controlled game that runs on any device with a browser.
+A full-stack web application that turns workshop icebreaking into a structured, facilitator-controlled board game. The host creates a session and projects it on a shared screen. Participants join instantly by scanning a QR code � no login, no app install. Teams take turns rolling dice, landing on themed spaces, and completing collaborative prompts that warm up a room before ideation begins.
 
-**Design principles:**
-- Zero-friction participant onboarding (QR scan → enter name → play)
-- Facilitator stays in full control at all times
-- Non-competitive by design — no scoring, no winners, no pressure
-- Prompts drive real-world interaction, not screen time
-- Designed to transition naturally into structured ideation
+Built as a focused MVP for Topcoder's Rapid Application Development challenge.
 
 ---
 
 ## Features
 
-### Host / Facilitator
-- Create a session with 2–8 named teams
-- Configure max rounds and board size
-- Display a QR code and 6-character join code for instant participant onboarding
-- Control the full game lifecycle: start, advance turns, reset turns, end game
-- Large-screen optimized layout for projection
-
-### Participants
-- Join by scanning QR code or entering a short join code
-- No login, no account creation, no app install
-- Automatic captain assignment (first player per team)
-- Captain-only dice rolling enforced by server
-- Mobile-optimized view with live state updates
-
-### Game Mechanics
-- All teams share one board with cycling space types: Move, Talk, Create, Wildcard
-- Fixed turn rotation across teams
-- Server-authoritative dice roll (1–6)
-- Prompt selected based on landed space type
-- No-repeat prompt logic within a session (fallback: any unused → reuse if exhausted)
-- Game ends by host decision or after configured max rounds
-
-### Prompt System
-- 35 seed prompts included (10 Move, 10 Talk, 10 Create, 5 Wildcard)
-- Persistent storage in database
-- Admin panel for full CRUD: add, edit, enable/disable, delete
-- Filter by prompt type
-- Expandable — facilitators can add custom prompts before a session
-
-### Real-Time Sync
-- All connected clients (host + participants) receive live updates
-- Powered by Supabase Realtime with PostgreSQL change notifications
-- Debounced client-side fetch to prevent redundant queries
+- Host creates a session with 2�8 named teams, configures max rounds and board size
+- QR code and 6-character join code for zero-friction participant onboarding
+- No authentication required � participants enter a name and choose a team
+- First participant per team is auto-assigned as captain
+- Captain-only dice rolling, enforced server-side
+- Shared turn-based board with 4 cycling space types: Move, Talk, Create, Wildcard
+- Prompt shown per landed space; no-repeat logic within a session
+- Host controls full game lifecycle: start, advance, reset turn, end game
+- Real-time sync across all connected devices via Supabase Realtime
+- Admin panel for prompt CRUD with type filtering
 
 ---
 
@@ -61,142 +29,12 @@ This application solves a specific problem: **getting a room of strangers to int
 
 | Technology | Role |
 |---|---|
-| **Next.js** (App Router) | Full-stack framework — server actions + React UI |
-| **TypeScript** | End-to-end type safety |
-| **Tailwind CSS** | Utility-first responsive styling |
-| **Supabase** | PostgreSQL database + Row Level Security + Realtime |
-| **qrcode.react** | Client-side QR code generation |
-
----
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────┐
-│                  Next.js App                  │
-│  ┌─────────┐  ┌──────────┐  ┌─────────────┐ │
-│  │  Host   │  │  Player  │  │   Admin     │ │
-│  │  View   │  │  View    │  │   Panel     │ │
-│  └────┬────┘  └────┬─────┘  └──────┬──────┘ │
-│       │             │               │         │
-│  ┌────▼─────────────▼───────────────▼──────┐ │
-│  │         Server Actions (game.ts,        │ │
-│  │         session.ts, prompts.ts)         │ │
-│  └────────────────┬────────────────────────┘ │
-└───────────────────┼──────────────────────────┘
-                    │
-        ┌───────────▼───────────┐
-        │      Supabase         │
-        │  ┌─────────────────┐  │
-        │  │   PostgreSQL    │  │
-        │  │  sessions       │  │
-        │  │  teams          │  │
-        │  │  participants   │  │
-        │  │  turns          │  │
-        │  │  prompts        │  │
-        │  │  prompt_history │  │
-        │  └────────┬────────┘  │
-        │           │           │
-        │  ┌────────▼────────┐  │
-        │  │    Realtime     │  │
-        │  │  (WebSocket)    │  │
-        │  └─────────────────┘  │
-        └───────────────────────┘
-```
-
-**Key architectural decisions:**
-- **Server actions** handle all mutations — dice rolls, turn management, prompt selection. No client-side writes to game state.
-- **Conditional database updates** (`UPDATE ... WHERE status = 'expected'`) prevent race conditions on dice rolls, prompt selection, and turn completion.
-- **Debounced realtime subscriptions** coalesce rapid change events to prevent query storms with many connected clients.
-- **Session-keyed localStorage** preserves participant identity across page refreshes without requiring accounts.
-
----
-
-## Setup
-
-### Prerequisites
-
-- Node.js 18+
-- npm
-- A free [Supabase](https://supabase.com) account
-
-### 1. Supabase Project
-
-1. Create a new project at [supabase.com](https://supabase.com).
-2. Go to **Settings → API** and copy the **Project URL** and **anon public key**.
-
-### 2. Database Setup
-
-1. Open the **SQL Editor** in the Supabase dashboard.
-2. Paste and run `supabase/schema.sql` — creates all tables, indexes, RLS policies, and enables realtime publications.
-3. Paste and run `supabase/seed.sql` — inserts 35 icebreaker prompts.
-
-### 3. Verify Realtime
-
-In Supabase Dashboard → **Database → Replication**, confirm these tables are enabled for realtime:
-- `sessions`, `teams`, `participants`, `turns`
-
-(The schema already configures this, but verify in the dashboard.)
-
-### 4. Environment
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in `.env.local`:
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
-
-### 5. Run
-
-```bash
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
----
-
-## Usage
-
-### Hosting a Game
-
-1. Open `/` → click **"Create Session (Host)"**
-2. Name 2–8 teams, set rounds and board size → click **"Create Session"**
-3. Project the host screen — it shows a QR code and join code
-4. Participants join on their phones
-5. Click **"▶ Start Game"** when ready
-6. Each turn: roll dice → show prompt → team does the activity → click **"✓ Done — Next Turn"**
-7. Use **"Reset Turn"** if needed, **"End Game"** when finished
-
-### Joining as a Participant
-
-1. Scan the QR code displayed on the host screen (or enter the 6-character code at `/`)
-2. Enter your name and choose a team — no login required
-3. The first player on each team becomes **captain** and can roll the dice
-4. Follow along on your phone — state updates in real time
-
-### Managing Prompts (Admin)
-
-1. Go to `/admin` (linked from the home page)
-2. Add prompts with a type (Move, Talk, Create, Wildcard)
-3. Edit, enable/disable, or delete existing prompts
-4. Filter the list by type
-5. Prompts are available immediately in new game sessions
-
-### Prompt Seeding
-
-The `supabase/seed.sql` file includes 35 ready-to-use icebreaker prompts:
-- **10 Move**: Physical activities (e.g., "Everyone stand up and switch seats")
-- **10 Talk**: Discussion starters (e.g., "Two truths and a lie")
-- **10 Create**: Creative tasks (e.g., "Draw your team mascot in 60 seconds")
-- **5 Wildcard**: Surprise activities (e.g., "The host picks any player for the next activity")
-
-Additional prompts can be added via the admin panel at any time.
+| Next.js 14+ (App Router) | Full-stack framework, server actions |
+| TypeScript | End-to-end type safety |
+| Tailwind CSS | Utility-first responsive styling |
+| Supabase | PostgreSQL database + Row Level Security |
+| Supabase Realtime | WebSocket-based live state sync |
+| qrcode.react | Client-side QR code generation |
 
 ---
 
@@ -204,79 +42,192 @@ Additional prompts can be added via the admin panel at any time.
 
 ```
 src/
-├── app/                            # Next.js App Router pages
-│   ├── page.tsx                    # Home — create session or join
-│   ├── layout.tsx                  # Root layout
-│   ├── admin/page.tsx              # Prompt management admin panel
-│   ├── host/create/page.tsx        # Session creation form
-│   ├── host/[sessionId]/page.tsx   # Host game view (lobby → playing → ended)
-│   ├── join/[code]/page.tsx        # Participant join page
-│   └── play/[sessionId]/page.tsx   # Participant game view
-├── components/                     # Reusable UI components
-│   ├── DiceRoller.tsx              # Animated dice roller
-│   ├── GameBoard.tsx               # Board visualization with tokens
-│   ├── PromptCard.tsx              # Category-styled prompt display
-│   ├── QRJoin.tsx                  # QR code + join code widget
-│   └── TeamList.tsx                # Team roster with captain indicator
-├── hooks/
-│   └── useGameState.ts             # Realtime state subscription (debounced)
-└── lib/
-    ├── supabase.ts                 # Supabase client initialization
-    ├── types.ts                    # TypeScript types + board space logic
-    └── actions/
-        ├── session.ts              # Session lifecycle + participant join
-        ├── game.ts                 # Dice roll, prompt selection, turn flow
-        └── prompts.ts              # Admin prompt CRUD
++-- app/                    # Pages (App Router)
+�   +-- page.tsx            # Home
+�   +-- admin/              # Prompt management
+�   +-- host/create/        # Session creation
+�   +-- host/[sessionId]/   # Host game view
+�   +-- join/[code]/        # Participant join
+�   +-- play/[sessionId]/   # Participant game view
++-- components/             # GameBoard, DiceRoller, PromptCard, QRJoin, TeamList
++-- hooks/
+�   +-- useGameState.ts     # Debounced realtime subscription
++-- lib/
+    +-- supabase.ts
+    +-- types.ts
+    +-- actions/            # session.ts, game.ts, prompts.ts (server actions)
 supabase/
-├── schema.sql                      # Database schema (6 tables + RLS + realtime)
-└── seed.sql                        # 35 seed prompts
++-- schema.sql              # All tables, indexes, RLS policies, realtime config
++-- seed.sql                # 35 seed prompts
 ```
+
+---
+
+## Setup Instructions
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Create a Supabase project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project.
+2. In the dashboard, go to **Settings ? API** and copy:
+   - **Project URL**
+   - **anon public key**
+
+### 3. Run the database schema
+
+1. Open the **SQL Editor** in the Supabase dashboard.
+2. Paste the contents of `supabase/schema.sql` and run it.
+
+### 4. Seed the prompts
+
+1. In the SQL Editor, paste the contents of `supabase/seed.sql` and run it.
+2. This inserts 35 ready-to-use icebreaker prompts.
+
+### 5. Configure environment
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in `.env.local` with your Supabase credentials (see **Environment Variables** below).
+
+### 6. Run the app
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public API key | Yes |
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Both variables are required. An `.env.example` file is included in the repository.
+
+---
+
+## Running the App
+
+```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+npm start
+```
+
+---
+
+## How to Use
+
+### Host Flow
+
+1. Go to `/` and click **Create Session (Host)**
+2. Name 2�8 teams, set max rounds and board size
+3. Click **Create Session** � the lobby opens with a QR code and join code
+4. Project the host screen; participants scan the QR code or enter the short code
+5. Click **? Start Game** when ready
+6. Each turn: active team captain rolls dice ? prompt appears ? team completes activity ? click **? Done � Next Turn**
+7. Use **Reset Turn** to redo a turn, or **End Game** to finish early
+
+### Participant Flow
+
+1. Scan the QR code on the host screen or go to `/join/[code]`
+2. Enter your name and select a team � no login required
+3. The first player per team becomes captain and can roll the dice
+4. All game state updates live on every device
+
+### Admin Flow
+
+1. Go to `/admin`
+2. Add, edit, enable/disable, or delete prompts
+3. Filter prompts by type (Move, Talk, Create, Wildcard)
+4. Changes are reflected immediately in new game sessions
+
+---
+
+## Routes
+
+| Route | Description |
+|---|---|
+| `/` | Home � create session or enter join code |
+| `/host/create` | Session creation form |
+| `/host/[sessionId]` | Host game view (lobby, active game, and ended state) |
+| `/join/[code]` | Participant join page |
+| `/play/[sessionId]` | Participant game view |
+| `/admin` | Prompt management panel |
+
+---
+
+## Prompt Management Notes
+
+- Prompts are grouped into four categories: **Move**, **Talk**, **Create**, **Wildcard**
+- When a team lands on a space, a prompt matching the space type is selected
+- **No-repeat logic**: prompts already used in a session are excluded from selection
+- **Fallback**: if all prompts of a type are exhausted, any unused prompt is selected; if all prompts are exhausted, prompts are reused
+- 35 prompts are seeded via `seed.sql`; additional prompts can be added at any time via `/admin`
+
+---
+
+## Reliability / Implementation Notes
+
+- **Server-authoritative game logic**: all mutations (dice rolls, prompt selection, turn completion) run as Next.js server actions � no client-side writes to game state
+- **Race condition prevention**: critical DB updates use conditional writes (`UPDATE ... WHERE status = 'expected'`), preventing double-rolls and duplicate prompt assignments
+- **Realtime sync**: all connected clients subscribe to live Supabase change events; a 200ms debounce prevents redundant query storms when multiple tables change in rapid succession
+- **Session identity**: participant identity is stored in `localStorage`, keyed by session ID, so page refreshes do not require rejoining
 
 ---
 
 ## Known Limitations
 
-These are intentional scope decisions for a 1-day MVP build:
+These are intentional MVP scope decisions:
 
-- **No authentication**: Designed for facilitator-led sessions where trust is assumed. Host and admin routes are accessible by URL. Production deployment would add role-based access.
-- **Single facilitator model**: One host controls each session. Multi-host or co-facilitation is out of scope.
-- **Captain persistence**: If a captain leaves, no automatic reassignment occurs. The host can continue driving the game from the host screen, which has full dice and turn controls.
-- **Prompt pool size**: 35 prompts are seeded. Long sessions may exhaust the pool, at which point prompts are reused. Additional prompts can be added via the admin panel before a session.
-- **Browser-based identity**: Participant state is stored in browser localStorage, keyed by session. Clearing browser data requires rejoining.
-- **Online required**: All participants need an active internet connection. No offline or PWA mode.
-- **Realtime dependency**: Live sync requires Supabase Realtime to be enabled. If unavailable, a manual page refresh still shows the current state.
-
----
-
-## Future Improvements
-
-If extended beyond the MVP:
-- Role-based authentication for host and admin
-- Automatic captain reassignment on disconnect
-- Facilitator prompt customization per session
-- Session history and replay
-- Exportable session summary for workshop documentation
+- **No authentication**: host and admin routes are accessible by URL � appropriate for facilitated, trusted-room settings
+- **Single-host model**: one host drives each session; multi-host or co-facilitation is out of scope
+- **Captain persistence**: if a captain disconnects, no automatic reassignment occurs; the host screen retains full dice and turn controls as a fallback
+- **Browser identity**: participant state is tied to `localStorage`; clearing browser storage requires rejoining via the join code
+- **Online required**: all participants must have an active internet connection � no offline or PWA support
+- **Realtime dependency**: live sync requires Supabase Realtime to be enabled; a manual page refresh still shows current state if Realtime is unavailable
 
 ---
 
 ## Troubleshooting
 
-| Issue | Solution |
+| Issue | Fix |
 |---|---|
-| QR code shows `localhost` | The QR URL is auto-detected from the browser — ensure you are accessing the host page from your public URL, not localhost |
-| Realtime not updating | Verify realtime is enabled for `sessions`, `teams`, `participants`, `turns` in Supabase → Database → Replication |
+| Realtime not updating | In Supabase dashboard ? Database ? Replication, confirm `sessions`, `teams`, `participants`, `turns` are enabled |
 | "No prompts available" error | Run `supabase/seed.sql` in the SQL Editor, or add prompts via `/admin` |
-| Player lost after refresh | Identity is stored in localStorage. If cleared, the player must rejoin via the join code |
-| Build fails | Ensure Node.js 18+ and run `npm install` before `npm run dev` |
-#   I c e b r e a k e r - 
- 
- 
+| Participant lost after refresh | Rejoin using the same join code � identity is restored automatically if the same browser/session is used |
+| Build fails | Ensure Node.js 18+ is installed and run `npm install` before building |
+
+---
+
+## Future Improvements
+
+- Role-based access for host and admin routes
+- Automatic captain reassignment on participant disconnect
+- Per-session prompt customization by the host
+- Session history and exportable summary
+- PWA support for offline-capable participant views
+
+---
+
+## Submission Notes
+
+- The application builds and runs locally with `npm run dev` after completing setup
+- `supabase/schema.sql` and `supabase/seed.sql` are included for full database setup
+- `.env.example` documents all required environment variables
+- No paid services required � a free Supabase tier is sufficient
+- Designed and built as a rapid MVP for real-world workshop facilitation use cases
