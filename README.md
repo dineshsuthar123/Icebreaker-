@@ -148,6 +148,29 @@ npm run lint
 
 ---
 
+## Docker
+
+> **Note:** `NEXT_PUBLIC_*` variables are embedded into the JavaScript bundle at **build time** by Next.js. They must be passed as `--build-arg` flags to `docker build` — setting them as runtime environment variables is too late.
+
+### Build the image
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co \
+  --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key \
+  -t icebreaker .
+```
+
+### Run the container
+
+```bash
+docker run -p 3000:3000 icebreaker
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+---
+
 ## How to Use
 
 ### Host Flow
