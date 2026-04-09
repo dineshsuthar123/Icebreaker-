@@ -22,10 +22,9 @@ export default function HostGamePage({
   const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const appUrl = typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_APP_URL || window.location.origin)
+  const joinUrl = session && typeof window !== "undefined" 
+    ? `${window.location.origin}/join/${session.join_code}` 
     : "";
-  const joinUrl = session ? `${appUrl}/join/${session.join_code}` : "";
 
   // Fetch prompt when turn has a prompt_id
   useEffect(() => {

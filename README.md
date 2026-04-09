@@ -148,7 +148,6 @@ Fill in `.env.local`:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### 5. Run
@@ -241,7 +240,6 @@ supabase/
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public API key | Yes |
-| `NEXT_PUBLIC_APP_URL` | Base URL for QR code links (default: `http://localhost:3000`) | Optional |
 
 ---
 
@@ -274,10 +272,11 @@ If extended beyond the MVP:
 
 | Issue | Solution |
 |---|---|
-| QR code shows `localhost` | Set `NEXT_PUBLIC_APP_URL` in `.env.local` to your public URL or ngrok URL |
+| QR code shows `localhost` | The QR URL is auto-detected from the browser — ensure you are accessing the host page from your public URL, not localhost |
 | Realtime not updating | Verify realtime is enabled for `sessions`, `teams`, `participants`, `turns` in Supabase → Database → Replication |
 | "No prompts available" error | Run `supabase/seed.sql` in the SQL Editor, or add prompts via `/admin` |
 | Player lost after refresh | Identity is stored in localStorage. If cleared, the player must rejoin via the join code |
 | Build fails | Ensure Node.js 18+ and run `npm install` before `npm run dev` |
-#   I c e b r e a k e r -  
+#   I c e b r e a k e r - 
+ 
  
