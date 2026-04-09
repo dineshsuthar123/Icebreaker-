@@ -35,6 +35,9 @@ export default function AdminPage() {
   const [editType, setEditType] = useState<PromptType>("move");
   const [editText, setEditText] = useState("");
 
+  // Pending delete state (two-step: click Del > confirm inline)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setLoading(true);
     const data = await getPrompts();
@@ -66,8 +69,8 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this prompt?")) return;
     await deletePrompt(id);
+    setPendingDeleteId(null);
     await load();
   };
 
@@ -247,12 +250,30 @@ export default function AdminPage() {
                       >
                         Edit
                       </button>
-                      <button
-                        onClick={() => handleDelete(prompt.id)}
-                        className="text-xs px-2 py-1 rounded bg-red-50 text-red-500 hover:bg-red-100"
-                      >
-                        Del
-                      </button>
+                      {pendingDeleteId === prompt.id ? (
+                        <span className="flex items-center gap-1">
+                          <span className="text-xs text-red-600 font-medium">Sure?</span>
+                          <button
+                            onClick={() => handleDelete(prompt.id)}
+                            className="text-xs px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={() => setPendingDeleteId(null)}
+                            className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          >
+                            No
+                          </button>
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => setPendingDeleteId(prompt.id)}
+                          className="text-xs px-2 py-1 rounded bg-red-50 text-red-500 hover:bg-red-100"
+                        >
+                          Del
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
