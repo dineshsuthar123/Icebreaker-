@@ -35,7 +35,7 @@ export default function Home() {
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               maxLength={6}
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center text-lg font-mono uppercase tracking-widest placeholder:text-gray-700 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center text-lg font-mono uppercase tracking-widest text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
             <button
               onClick={() => {

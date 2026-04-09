@@ -103,7 +103,7 @@ export default function JoinPage({
               onChange={(e) => setPlayerName(e.target.value)}
               placeholder="Enter your name"
               maxLength={30}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 placeholder:text-gray-700 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 

@@ -132,7 +132,7 @@ export default function AdminPage() {
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
               placeholder="Enter prompt text..."
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm placeholder:text-gray-600 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
             <button
               onClick={handleAdd}
@@ -198,7 +198,7 @@ export default function AdminPage() {
                       type="text"
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
-                      className="flex-1 border border-gray-300 rounded px-3 py-1 text-sm text-gray-700 font-medium placeholder:text-gray-600 placeholder:font-medium"
+                      className="flex-1 border border-gray-300 rounded px-3 py-1 text-sm text-gray-900 font-medium placeholder:text-gray-400 placeholder:font-medium"
                     />
                     <div className="flex gap-1">
                       <button

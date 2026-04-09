@@ -68,7 +68,7 @@ export default function CreateSessionPage() {
                   value={name}
                   onChange={(e) => updateTeamName(i, e.target.value)}
                   placeholder="Team name"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 placeholder:text-gray-600 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
                 {teamNames.length > 2 && (
                   <button
@@ -105,7 +105,7 @@ export default function CreateSessionPage() {
                 onChange={(e) => setMaxRounds(Number(e.target.value))}
                 min={1}
                 max={50}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
             <div>
@@ -118,7 +118,7 @@ export default function CreateSessionPage() {
                 onChange={(e) => setBoardSize(Number(e.target.value))}
                 min={10}
                 max={100}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
           </div>
